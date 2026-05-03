@@ -1,1 +1,1 @@
-# SSOO_Proyecto2026
+# Sistemas Operativos - Proyecto 2026
