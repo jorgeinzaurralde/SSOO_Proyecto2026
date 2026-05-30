@@ -1,0 +1,6 @@
+id;tiempoAparicion;zonaObjetivo;tiempoHastaImpacto;tiempoDesactivacion
+M1;1;Hospital;15;4
+M2;3;Aeropuerto;10;5
+M3;5;Central electrica;12;3
+M4;8;Zona residencial;8;4
+M5;10;Datacenter;9;2
