@@ -1,16 +1,4 @@
-# Simulador de defensa aerea
-
-Proyecto simple en Java para una materia de Sistemas Operativos. El programa simula misiles que aparecen durante una linea de tiempo, una cola compartida de amenazas, interceptores limitados y un hilo separado que controla impactos.
-
-El objetivo principal es mostrar uso de hilos y sincronizacion con semaforos, manteniendo el codigo claro para estudiantes.
-
 ## Como compilar
-
-En Linux, macOS o consolas con soporte para `**`:
-
-```bash
-javac -d out src/**/*.java src/*.java
-```
 
 En Windows PowerShell:
 
@@ -81,11 +69,3 @@ El control de impactos se realiza con un hilo separado llamado `ControladorImpac
 Este hilo revisa periodicamente los misiles en estado `PENDIENTE` o `EN_ATENCION`. Si el tiempo actual es mayor o igual a `tiempoAparicion + tiempoHastaImpacto`, el misil pasa a `IMPACTADO`.
 
 Un misil impactado no puede desactivarse despues. Si impacta durante la desactivacion, el interceptor no imprime exito.
-
-## Restricciones respetadas
-
-- No se usa `synchronized`.
-- No se usan monitores, `wait`, `notify` ni `notifyAll`.
-- No se usan `ThreadPool`, `ExecutorService`, `BlockingQueue`, `ReentrantLock` ni estructuras concurrentes avanzadas.
-- No se usan librerias externas.
-- La sincronizacion se hace con `java.util.concurrent.Semaphore`.
