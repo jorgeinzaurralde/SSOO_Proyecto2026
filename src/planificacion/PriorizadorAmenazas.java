@@ -18,7 +18,7 @@ public class PriorizadorAmenazas {
             prioridades.put(misil, calcularPrioridad(misil, tiempoActual, cantidadPendientes, cantidadInterceptores));
         }
 
-        Collections.sort(cola, new ComparadorPrioridad(prioridades));
+        Collections.sort(cola, new ComparadorPrioridad(prioridades, tiempoActual));
     }
 
     public double calcularPrioridad(Misil misil, int tiempoActual, int cantidadMisilesPendientes, int cantidadInterceptores) throws InterruptedException {
@@ -53,14 +53,31 @@ public class PriorizadorAmenazas {
 
     private static class ComparadorPrioridad implements Comparator<Misil> {
         private final Map<Misil, Double> prioridades;
+        private final int tiempoActual;
 
-        public ComparadorPrioridad(Map<Misil, Double> prioridades) {
+        public ComparadorPrioridad(Map<Misil, Double> prioridades, int tiempoActual) {
             this.prioridades = prioridades;
+            this.tiempoActual = tiempoActual;
         }
 
         public int compare(Misil primero, Misil segundo) {
             double prioridadPrimero = prioridades.get(primero);
             double prioridadSegundo = prioridades.get(segundo);
+            int criticidadPrimero = primero.getZonaObjetivo().getCriticidad();
+            int criticidadSegundo = segundo.getZonaObjetivo().getCriticidad();
+
+            if (ambosSonAtendibles(prioridadPrimero, prioridadSegundo)
+                    && criticidadPrimero != criticidadSegundo) {
+                if (criticidadPrimero < criticidadSegundo
+                        && amenazaMayorQuedaCondenada(primero, segundo)) {
+                    return 1;
+                }
+
+                if (criticidadSegundo < criticidadPrimero
+                        && amenazaMayorQuedaCondenada(segundo, primero)) {
+                    return -1;
+                }
+            }
 
             if (prioridadPrimero > prioridadSegundo) {
                 return -1;
@@ -77,6 +94,18 @@ public class PriorizadorAmenazas {
             }
 
             return segundo.getZonaObjetivo().getCriticidad() - primero.getZonaObjetivo().getCriticidad();
+        }
+
+        private boolean ambosSonAtendibles(double prioridadPrimero, double prioridadSegundo) {
+            return prioridadPrimero >= 0 && prioridadSegundo >= 0;
+        }
+
+        private boolean amenazaMayorQuedaCondenada(Misil amenazaMenor, Misil amenazaMayor) {
+            int finSiSeAtiendeMenorPrimero = tiempoActual
+                    + amenazaMenor.getTiempoDesactivacion()
+                    + amenazaMayor.getTiempoDesactivacion();
+
+            return finSiSeAtiendeMenorPrimero >= amenazaMayor.getTiempoImpacto();
         }
     }
 }
