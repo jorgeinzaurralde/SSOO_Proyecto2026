@@ -119,6 +119,25 @@ holgura + 1
 
 Se atiende primero el misil con mayor prioridad. Si la holgura es menor o igual a cero, el misil queda al final porque con la regla de impacto `>=` ya no llega a desactivarse a tiempo.
 
+## Manejo de criticidades
+
+La criticidad de la zona se usa de dos formas:
+
+1. Como parte de la formula de prioridad. Una zona mas critica aumenta el puntaje del misil, por lo que tiende a quedar antes en la cola.
+2. Como regla de proteccion entre amenazas ya detectadas. Antes de ordenar solo por puntaje, el priorizador compara pares de misiles y evita que una amenaza de menor criticidad pase por encima de una amenaza de mayor criticidad si atender primero la amenaza menor haria que la mayor ya no pueda desactivarse a tiempo.
+
+La regla de proteccion se puede resumir asi:
+
+```txt
+Si amenazaMenor.criticidad < amenazaMayor.criticidad
+y atender amenazaMenor primero hace que amenazaMayor impacte,
+entonces amenazaMayor debe quedar antes en la cola.
+```
+
+Con esto, la urgencia sigue importando, pero no puede condenar una zona mas critica cuando todavia era posible protegerla.
+
+Importante: esta regla se aplica solo sobre misiles que ya fueron detectados y estan en la cola. El sistema no reserva interceptores para amenazas futuras que todavia no aparecieron en la simulacion.
+
 ## Planificacion
 
 El algoritmo `PlanificadorFCFS` se mantiene simple: toma el primer misil de la cola.
