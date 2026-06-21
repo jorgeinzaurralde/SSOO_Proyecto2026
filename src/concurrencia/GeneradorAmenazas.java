@@ -5,6 +5,7 @@ import modelo.EstadoMisil;
 import modelo.Misil;
 import tiempo.RelojSimulacion;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GeneradorAmenazas extends Thread {
@@ -24,19 +25,28 @@ public class GeneradorAmenazas extends Thread {
         int generados = 0;
 
         while (generados < misiles.size()) {
+            List<Misil> detectados = new ArrayList<Misil>();
+
             for (Misil misil : misiles) {
                 try {
                     if (misil.getEstado() == EstadoMisil.NO_DETECTADO
                             && reloj.getTiempoActual() >= misil.getTiempoAparicion()) {
                         misil.setEstado(EstadoMisil.PENDIENTE);
                         logger.imprimir("Misil " + misil.getId() + " detectado hacia " + misil.getZonaObjetivo().getNombre());
-                        colaAmenazas.agregar(misil);
+                        detectados.add(misil);
                         generados++;
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     return;
                 }
+            }
+
+            try {
+                colaAmenazas.agregarTodos(detectados);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
             }
 
             try {

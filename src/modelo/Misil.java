@@ -67,7 +67,7 @@ public class Misil {
     public boolean puedeSerAtendido(int tiempoActual) throws InterruptedException {
         mutexEstado.acquire();
         try {
-            return estado == EstadoMisil.PENDIENTE && tiempoActual < getTiempoImpacto();
+            return estado == EstadoMisil.PENDIENTE && puedeFinalizarAntesDelImpacto(tiempoActual);
         } finally {
             mutexEstado.release();
         }
@@ -76,7 +76,7 @@ public class Misil {
     public boolean marcarEnAtencionSiPuede(int tiempoActual) throws InterruptedException {
         mutexEstado.acquire();
         try {
-            if (estado == EstadoMisil.PENDIENTE && tiempoActual < getTiempoImpacto()) {
+            if (estado == EstadoMisil.PENDIENTE && puedeFinalizarAntesDelImpacto(tiempoActual)) {
                 estado = EstadoMisil.EN_ATENCION;
                 return true;
             }
@@ -107,9 +107,6 @@ public class Misil {
                 estado = EstadoMisil.DESACTIVADO;
                 return true;
             }
-            if (estado == EstadoMisil.EN_ATENCION && tiempoActual >= getTiempoImpacto()) {
-                estado = EstadoMisil.IMPACTADO;
-            }
             return false;
         } finally {
             mutexEstado.release();
@@ -123,5 +120,9 @@ public class Misil {
         } finally {
             mutexEstado.release();
         }
+    }
+
+    private boolean puedeFinalizarAntesDelImpacto(int tiempoActual) {
+        return tiempoActual + tiempoDesactivacion < getTiempoImpacto();
     }
 }

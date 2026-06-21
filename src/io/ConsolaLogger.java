@@ -25,4 +25,17 @@ public class ConsolaLogger {
             Thread.currentThread().interrupt();
         }
     }
+
+    public void imprimirSinTiempo(String mensaje) {
+        try {
+            mutexSalida.acquire();
+            try {
+                System.out.println(mensaje);
+            } finally {
+                mutexSalida.release();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
 }

@@ -1,16 +1,20 @@
 package tiempo;
 
+import concurrencia.ColaAmenazas;
+
 import java.util.concurrent.Semaphore;
 
 public class RelojSimulacion extends Thread {
     private int tiempoActual;
     private boolean activo;
     private final Semaphore mutex;
+    private ColaAmenazas colaAmenazas;
 
     public RelojSimulacion() {
         this.tiempoActual = 0;
         this.activo = true;
         this.mutex = new Semaphore(1);
+        this.colaAmenazas = null;
     }
 
     public void run() {
@@ -18,10 +22,15 @@ public class RelojSimulacion extends Thread {
             try {
                 Thread.sleep(1000);
                 incrementarTiempo();
+                reordenarCola();
             } catch (InterruptedException e) {
                 detener();
             }
         }
+    }
+
+    public void configurarColaAmenazas(ColaAmenazas colaAmenazas) {
+        this.colaAmenazas = colaAmenazas;
     }
 
     public int getTiempoActual() {
@@ -57,6 +66,12 @@ public class RelojSimulacion extends Thread {
             tiempoActual++;
         } finally {
             mutex.release();
+        }
+    }
+
+    private void reordenarCola() throws InterruptedException {
+        if (colaAmenazas != null) {
+            colaAmenazas.reordenarPorPrioridad();
         }
     }
 
