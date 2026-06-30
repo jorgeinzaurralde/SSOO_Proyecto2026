@@ -153,14 +153,6 @@ La diferencia es que la cola se reordena por prioridad cada segundo y tambien cu
 - En `ConsolaLogger`, `mutexSalida` evita que mensajes de distintos hilos se mezclen.
 - En `Interceptor` y `ControladorImpactos`, un mutex protege el booleano de actividad.
 
-## Control de impactos
-
-El control de impactos se realiza con un hilo separado llamado `ControladorImpactos`.
-
-Este hilo revisa periodicamente los misiles en estado `PENDIENTE` o `EN_ATENCION`. Si el tiempo actual es mayor o igual a `tiempoAparicion + tiempoHastaImpacto`, el misil pasa a `IMPACTADO`.
-
-Un misil impactado no puede desactivarse despues. Si impacta durante la desactivacion, el interceptor no imprime exito.
-
 ## Restricciones respetadas
 
 - No se usa `synchronized`.
